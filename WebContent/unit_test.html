@@ -1,0 +1,225 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script src="offline/jquery-latest.js"></script>
+<link rel="stylesheet" href="offline/qunit.css" type="text/css"
+	media="screen" />
+<script type="text/javascript" src="offline/qunit.js"></script>
+    <script type="text/javascript" src="game.js"></script>
+  <script>
+
+
+	$(document)
+			.ready(
+					function() {
+						module("4. Diagonale");
+						test(
+								"Le jeu est fini si 3 cases de la premiere diagonale sont prises",
+								function() {
+									game = new Game();
+                                    game.fields[0]="X";
+                                    game.fields[4]="X";
+                                    game.fields[8]="X";
+									ok(game.isFinished(),
+									"quand je prends 3 cases de la premiere diagonale, le jeu est fini.");
+								});
+                        test(
+								"Le jeu est fini si 3 cases de la deuxieme diagonale sont prises",
+								function() {
+									game = new Game();
+                               		game.fields[2]="X";
+                                    game.fields[4]="X";
+                                    game.fields[6]="X";
+                                    ok(game.isFinished(),
+									"quand je prends 3 cases de la deuxieme diagonale, le jeu est fini.");
+								});
+                        module("3. Colonne");
+						test(
+								"Le jeu est fini si 3 cases de la premiere colonne sont prises",
+								function() {
+									game = new Game();
+                                     game.fields[0]="X";
+                                     game.fields[3]="X";
+                                     game.fields[6]="X";
+                                    ok(game.isFinished(),
+									"quand je prends 3 cases de la premiere colonne alignées, le jeu est fini.");
+								});
+                        test(
+								"Le jeu est fini si 3 cases de la deuxieme colonne sont prises",
+								function() {
+									game = new Game();
+                                    game.fields[1]="X";
+                                    game.fields[4]="X";
+                                    game.fields[7]="X";
+                                    ok(game.isFinished(),
+									"quand je prends 3 cases de la deuxieme colonne alignées, le jeu est fini.");
+								});
+                         test(
+								"Le jeu est fini si 3 cases de la troisieme colonne sont prises",
+								function() {
+									game = new Game();
+                                    game.fields[2]="X";
+                                    game.fields[5]="X";
+                                    game.fields[8]="X";
+                                    ok(game.isFinished(),
+									"quand je prends 3 cases de la troisieme colonne alignées, le jeu est fini.");
+								});
+						module("2. Ligne");
+						test(
+								"Le jeu n'est pas fini si 3 cases non alignées sont prises",
+								function() {
+									game = new Game();
+                                    game.fields[0]="X";
+                                    game.fields[4]="X";
+                                    game.fields[2]="X";
+									ok(!game.isFinished(),
+									"quand je prends 3 cases non alignées, le jeu n'est pas fini.");
+								});
+						test(
+								"Le jeu est fini quand toutes les cases de la premiere ligne sont prises",
+								function() {
+									game = new Game();
+                                    game.fields[0]="X";
+                                    game.fields[1]="X";
+                                    game.fields[2]="X";
+									ok(game.isFinished(),
+									"quand je prends 3 cases sur la premiere ligne, le jeu est fini.");
+								});
+                        test(
+								"Le jeu est fini quand toutes les cases de la premiere ligne sont prises",
+								function() {
+									game = new Game();
+                                    game.fields[3]="X";
+                                     game.fields[4]="X";
+                                     game.fields[5]="X";
+						   			ok(game.isFinished(),
+									"quand je prends 3 cases sur la premiere ligne, le jeu est fini.");
+								});
+                         test(
+								"Le jeu est fini quand toutes les cases de la premiere ligne sont prises",
+								function() {
+									game = new Game();
+                                    game.fields[6]="X";
+                                    game.fields[7]="X";
+                                    game.fields[8]="X";
+                                    ok(game.isFinished(),
+									"quand je prends 3 cases sur la premiere ligne, le jeu est fini.");
+								});
+						module("1. Fin");
+						test(
+								"Le jeu est terminé si toutes les cases sont prises",
+								function() {
+									game = new Game();
+									game.take(1);
+									game.take(2);
+									game.take(3);
+									game.take(4);
+									game.take(5);
+									game.take(6);
+									game.take(7);
+									game.take(8);
+									game.take(9);
+									ok(game.isFinished(),
+											"quand je prends toutes les cases, ça doit être fini.");
+								});
+						test(
+								"Le jeu n'est pas terminé si aucune case n'est prise",
+								function() {
+									game = new Game();
+									ok(!game.isFinished(),
+											"quand je prends aucune case, ça doit pas être fini.");
+								});
+						test(
+								"Le jeu n'est pas terminé si 3 cases sont prises",
+								function() {
+	   								game = new Game();
+                                    game.fields[2]="X";
+                                    game.fields[0]="X";
+                                    game.fields[3]="X";
+                                    ok(!game.isFinished(),
+											"quand je prends 3 cases non alignes, ça doit pas être fini.");
+								});
+                        module("5. Case non vide");
+                        test(
+								"Si un joueur joue sur une case non vide, le coup n'est pas valide.",
+								function() {
+									game = new Game();
+									game.take(3);
+                                    equals(game.currentPlayer(), "O", "Au tour de O de jouer.");
+                                    game.take(3);
+                                    equals(game.currentPlayer(), "O", "Coup non valide - toujours a O de jouer.");
+                            	});
+                         module("7. Bot");
+                           test(
+                                   "Le bot peut retourner la premiere case disponible",
+                                   function() {
+                                       game = new Game();
+                                       game.take(3);
+                                       equals(game.getFirstPositionAvailable(), "1", "La premiere case est disponible.");
+                                   });
+                                                module("6. Joueurs");
+                         test(
+                                    "Le jeu fait jouer un joueur.",
+                                    function() {
+                                        game = new Game();
+                                        equals(game.currentPlayer(), "X", "Le joueur qui commence est X.");
+                                    });
+                         test(
+                                    "Le jeu alterne le joueur courrant.",
+                                    function() {
+                                        game = new Game();
+                                        game.take(3);
+                                        equals(game.currentPlayer(), "O", "Le deuxieme joueur est O.");
+                                    });
+                            test(
+                                       "Apres 2 coups, c est a nouveau a X de jouer",
+                                       function() {
+                                           game = new Game();
+                                           game.take(3);
+                                           game.take(1);
+                                           equals(game.currentPlayer(), "X", "Au premier joueur de rejouer.");
+                                       });
+                             test(
+                                       "Les coups que jouent X sont marques comme lui appartenant",
+                                       function() {
+                                           game = new Game();
+                                           game.take(3);
+                                           equals( game.fields[2], "X", "X a joue en case 3");
+                                       });
+                               test(
+                                       "Les coups que jouent X sont marques comme lui appartenant",
+                                       function() {
+                                           game = new Game();
+                                           game.curPlayer="O";
+                                           game.take(3);
+                                           equals( game.fields[2], "O", "O a joue en case 3");
+                                       });
+                                  test(
+                                    "Connais la valeur du joueur suivant en fonction du joueur actuel",
+                                    function() {
+                                        game = new Game();
+                                        game.take(3);
+                                        equals(game.otherPlayer(), "X", "X est le joueur qui vient de jouer");
+                                    });
+                            test(
+                                       "Connais la valeur du joueur suivant en fonction du joueur actuel",
+                                       function() {
+                                           game = new Game();
+                                           game.take(3);
+                                           game.take(1);
+                                           equals(game.otherPlayer(), "O", "O est le joueur qui vient de jouer");
+                                       });
+					});
+</script>
+
+</head>
+<body>
+	<h1 id="qunit-header">QUnit example</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture">test markup, will be hidden</div>
+</body>
+</html>
