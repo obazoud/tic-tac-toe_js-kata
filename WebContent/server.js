@@ -1,14 +1,10 @@
 
-var express = require('express');
+var server = require('express').createServer();
+var io = require('socket.io').listen(server);
 var game = new require('./game');
 
-var server = express.createServer();
-var io = require('socket.io').listen(server);
-
-server.use(express.static(__dirname));
 server.get('/', function(req, res){
-    //res.send('Hello World');
-    res.render('index.html');
+    res.sendfile(__dirname + '/index.html');
 });
 server.listen(process.env.C9_PORT, "0.0.0.0"); // Cloud9
 console.log("Server is running, ready for accepting players ^^");
