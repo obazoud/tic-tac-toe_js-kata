@@ -11,24 +11,14 @@ app.listen(process.env.C9_PORT, "0.0.0.0"); // Cloud9
 console.log("Server is running, ready for accepting players ^^");
 
 var players = 0;
-var current = null;
-var locked = false;
-var start = function() {
-    locked = false;
-    current = round.currentPlayer();
-};
-var isLocked = function(player) {
-    return locked || current != player;
-};
-var lock = function() { 
-    locked = true;
-    current = round.currentPlayer();
-};
-var unlock = function() {
-    locked = false;
-    current = round.currentPlayer();
-};
 var round = new game.Game();
+
+var locked = false;
+var start = function() { locked = false; };
+var isLocked = function(player) { return locked || round.currentPlayer() != player; };
+var lock = function() {  locked = true; };
+var unlock = function() { locked = false; };
+
 io.sockets.on('connection', function (socket) {
     players += 1;
     if(players > 2) {
@@ -74,19 +64,17 @@ io.sockets.on('connection', function (socket) {
                 return;
             }
             lock();
-            console.log(locked + " " + current + "!=" + player);
             var isValid = round.take(data.pos);
             if(!isValid) {
                 socket.emit('message', { 'type':'error', 'message':'Bad move, play somewhere else' });
                 unlock();
                 return;
             }
-            io.sockets.in('room').emit('play', { 'message':'Player plays on '+data.pos, 'pos':data.pos, 'icon':round.otherPlayer() });
+            io.sockets.in('room').emit('play', { 'message':player+' plays on '+data.pos, 'pos':data.pos, 'icon':round.otherPlayer() });
             if(hasWinner(player)) {
                 return;
             }
             unlock();
-            console.log(locked + " " + current + "!=" + player);
         });
     });
 });
