@@ -5,47 +5,37 @@
         <title>Tic Tac Toe Javascript</title>
         <style type="text/css">
             .hidden {display:none;}
+            .error {color:red;}
+            .winner {font-weight:bold;}
         </style>
         <script src="offline/jquery-latest.js"></script>
-        <script src="game.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
         <script>
             "use strict";
+            
             var draw = function (id, symbol) {
                 $("#"+id).text(symbol);
             }
-            var hasWinner = function() {
-                if (game.isFinished()) {
-                    if(game.winner !== undefined ) {
-                        alert(game.winner+" win the Game!");
-                    } else {
-                        alert("No winner");
-                    }
-                    $("#replay").show();
-                    return true;
-                }
-                return false;
+            var log = function (message, type) {
+                $("<div>" + message + "</div>").addClass(type).prependTo("#message");
             }
             
-            var game = new Game();
-            var stop = false;
             $(document).ready(function() {
                 $("td").click(function(event) {
-                    if(!stop) {
-                        // real player play
-                        var isValid = game.take(this.id);
-                        if (isValid) {
-                            draw(this.id, game.otherPlayer());
-                            stop = hasWinner();
-                        }
-                        if (!stop) {
-                            // bot play
-                            var firstPositionAvailable = game.getFirstPositionAvailable();
-                            game.take(firstPositionAvailable);
-                            draw(firstPositionAvailable,game.otherPlayer());
-                            stop = hasWinner();
-                        }
-                    }
+                    socket.emit('try', { 'pos': this.id });
                 });
+            });
+            
+            var socket = io.connect();
+            socket.on('message', function (data) {
+                log(data.message, data.type);
+                if("winner" == data.type) {
+                    $("#replay").show();
+                }
+            });
+            socket.on('play', function (data) {
+                draw(data.pos, data.icon);
+                log(data.message, data.type);
             });
         </script>
     </head>
@@ -67,6 +57,7 @@
                 <td id="9">_</td>
             </tr>
         </table>
-        <p id="replay" class="hidden"><a href="javascript:document.location.reload();">play again !</a></p>
+        <p id="message"></p>
+        <p id="replay" class="hidden"><a href="javascript:document.location.reload();">Play again !</a></p>
     </body>
 </html>
