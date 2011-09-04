@@ -15,8 +15,13 @@ console.log("Server is running, ready for accepting players ^^");
 
 io.sockets.on('connection', function (socket) {
     round = new game.Game();
-    var winnerMsg = null;
     
+    var locked = false;
+    var isLocked = function() { return locked; };
+    var lock = function() { locked = true; };
+    var unlock = function() { locked = false; };
+    
+    var winnerMsg = null;
     var hasWinner = function() {
         if (round.isFinished() && round.winner !== undefined) {
             winnerMsg = (round.winner=="X" ? "Player" : "Bot") + " win the Game!";
@@ -30,13 +35,16 @@ io.sockets.on('connection', function (socket) {
     
     socket.emit('message', { 'message': 'Your turn' });
     socket.on('try', function (data) {
-        if(round.winner) {
-            socket.emit('message', { 'type':'error', 'message':'What are you trying to do ;-)' });
+        if(isLocked()) {
+            if(round.winner) socket.emit('message', { 'type':'error', 'message':'What are you trying to do ;-)' });
+            else socket.emit('message', { 'type':'error', 'message':'Please wait before playing again...' });
             return;
         }
+        lock();
         var isValid = round.take(data.pos);
         if(!isValid) {
             socket.emit('message', { 'type':'error', 'message':'Bad move, play somewhere else' });
+            unlock();
             return;
         }
         socket.emit('play', { 'message':'Player plays on '+data.pos, 'pos':data.pos, 'icon':round.otherPlayer() });
@@ -51,5 +59,6 @@ io.sockets.on('connection', function (socket) {
             socket.emit('message', { 'type':'winner', 'message': winnerMsg });
             return;
         }
+        unlock();
     });
 });
