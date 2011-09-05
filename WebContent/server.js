@@ -10,14 +10,13 @@ app.get('/', function(req, res){
 app.listen(process.env.C9_PORT, "0.0.0.0"); // Cloud9
 console.log("Server is running, ready for accepting players ^^");
 
-var players = 0;
-var round = new game.Game();
-
 var locked = false;
-var start = function() { locked = false; };
-var isLocked = function(player) { return locked || round.currentPlayer() != player; };
 var lock = function() {  locked = true; };
 var unlock = function() { locked = false; };
+var isLocked = function(player) { return locked || round.currentPlayer() != player; };
+
+var players = 0;
+var round = new game.Game();
 
 io.sockets.on('connection', function (socket) {
     players += 1;
@@ -25,8 +24,8 @@ io.sockets.on('connection', function (socket) {
         socket.emit('message', { 'type':'error', 'message':'Too late, try later...' });
         return;
     }
-    
     var player = (players == 1 ? "X" : "O");
+    
     socket.set('player', player, function () {
         socket.join('room');
         if('X' == player) {
@@ -35,7 +34,7 @@ io.sockets.on('connection', function (socket) {
         } else {
             socket.broadcast.to('room').emit('message', { 'type':'info', 'message': 'It is your turn to play !' });
             socket.emit('message', { 'type':'info', 'message':'Please wait for your opponent to play...' });
-            start();
+            unlock();
         }
     });
     
