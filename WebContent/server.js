@@ -26,6 +26,8 @@ io.sockets.on('connection', function (socket) {
     }
     var player = (players == 1 ? "X" : "O");
     
+    var clients = io.sockets.clients('room');
+    
     socket.set('player', player, function () {
         socket.join('room');
         if('X' == player) {
@@ -75,5 +77,10 @@ io.sockets.on('connection', function (socket) {
             }
             unlock();
         });
+    });
+    
+    socket.on('disconnect', function () {
+        lock();
+        socket.broadcast.to('room').emit('message', { 'type':'refresh', 'message': 'Your opponent logged out, please refresh to replay' });
     });
 });
