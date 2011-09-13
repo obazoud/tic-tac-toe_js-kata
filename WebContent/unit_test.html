@@ -140,6 +140,19 @@
                                     ok(!game.isFinished(),
 											"quand je prends 3 cases non alignes, ça doit pas être fini.");
 								});
+            test(
+                "Le jeu n'est pas terminé pour cette combinaison (false positive)",
+                function() {
+                  game = new Game();
+                  game.take(1);
+                  game.take(5);
+                  game.take(9);
+                  game.take(7);
+                  game.take(3);
+                  game.take(2);
+                  game.take(8);
+                  ok(!game.isFinished(), "quand je fais cette combinaison, ça doit pas être fini.");
+								});
                         module("5. Case non vide");
                         test(
 								"Si un joueur joue sur une case non vide, le coup n'est pas valide.",

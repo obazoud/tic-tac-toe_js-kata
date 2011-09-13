@@ -22,11 +22,11 @@ Game.prototype = {
         var colonne = this.fields[0] + this.fields[3] + this.fields[6] + "|" + this.fields[1] + this.fields[4] + this.fields[7] + "|" + this.fields[2] + this.fields[5] + this.fields[8];
         var diagonale = this.fields[0] + this.fields[4] + this.fields[8] + "|" + this.fields[2] + this.fields[4] + this.fields[6];
         //check x win
-        if ((ligne + colonne + diagonale).indexOf("XXX") != -1) {
+        if ((ligne + "|" + colonne + "|" + diagonale).indexOf("XXX") != -1) {
             this.winner = "X";
             return true;
         }
-        else if ((ligne + colonne + diagonale).indexOf("OOO") != -1) {
+        else if ((ligne + "|" + colonne + "|" + diagonale).indexOf("OOO") != -1) {
             this.winner = "O";
             return true;
         }
